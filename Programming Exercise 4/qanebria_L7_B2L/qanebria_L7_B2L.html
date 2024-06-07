@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Lab 7. Changing DOM Elements (jQuery)</title>
+    <style>
+        body {
+          font-family: Arial, sans-serif;
+          background-color: #f4f4f4;
+          margin: 0;
+          padding: 0;
+        }
+        .header {
+          background-color: #333;
+          color: #fff;
+          padding: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+        .header h1 {
+          margin: 0;
+        }
+        .header img {
+          margin-right: 10px;
+        }
+        .header-content {
+          display: flex;
+          align-items: center;
+        }
+        .container {
+          max-width: 800px;
+          margin: 20px auto;
+          padding: 20px;
+          background-color: #fff;
+          border-radius: 8px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+          margin-top: 0;
+        }
+        h6 {
+          margin: 5px 0 0;
+          font-size: 14px;
+        }
+        input[type="text"] {
+          width: calc(100% - 160px);
+          padding: 10px;
+          margin-bottom: 10px;
+          border: 1px solid #ccc;
+          border-radius: 4px;
+        }
+        .button-container {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px; 
+        }
+        .button-reset{
+          margin-top: -45px;
+          margin-left: 710px;
+        }
+        button {
+          padding: 10px 20px;
+          margin-left: 10px;
+          cursor: pointer;
+          border: none;
+          border-radius: 4px;
+          background-color: #007bff;
+          color: #fff;
+          transition: background-color 0.3s;
+          margin-top: -10px;
+        }
+        button:hover {
+          background-color: #0056b3;
+        }
+        #item-list {
+          margin-top: 20px;
+          text-align: left;
+          padding-left: 0;
+          list-style-type: none;
+        }
+        .item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 10px;
+          border-bottom: 1px solid #ccc;
+        }
+        .item span {
+          flex: 1;
+        }
+        .delete-btn {
+          padding: 5px 10px;
+          cursor: pointer;
+          border: none;
+          border-radius: 4px;
+          background-color: #dc3545;
+          color: #fff;
+          transition: background-color 0.3s;
+        }
+        .delete-btn:hover {
+          background-color: #c82333;
+        }
+        #message {
+          margin-top: 10px;
+          color: #007bff;
+        }
+      </style>
+</head>
+<div class="header">
+    <div class="header-content">
+        <img src="126.png" alt="Logo" width="100">
+        <div>
+            <h1>Lab#7 Changing DOM Elements (jQuery)</h1>
+            <h6>by: Quennie A. Nebria</h6>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="button-container">
+        <input type="text" id="item-input" placeholder="Enter a task">
+        <button id="add-button">Add</button>
+        <button id="search-button">Search</button>
+    </div>
+    <h2>List of My Task/s</h2>
+    <div class="button-reset">
+        <button id="reset-button">Reset</button>
+    </div>
+    <div id="message"></div>
+    <ul id="item-list"></ul>
+</div>
+
+<script>
+    $(document).ready(function() {
+        let itemList = [];
+
+        // Add an item to the list
+        $('#add-button').click(function() {
+            let item = $('#item-input').val().trim();
+            if (item !== '') {
+                itemList.push(item);
+                updateList();
+                $('#item-input').val('');
+            }
+        });
+
+        // Search for an item in the list
+        $('#search-button').click(function() {
+            let item = $('#item-input').val().trim().toLowerCase();
+            let foundItems = itemList.filter(function(element) {
+                return element.toLowerCase() === item;
+            });
+            if (foundItems.length > 0) {
+                showMessage('Item Found');
+                displaySearchedItems(foundItems);
+            } else {
+                showMessage('Item Not Found');
+                updateList();
+            }
+        });
+
+        // Delete an item from the list
+        $(document).on('click', '.delete-btn', function() {
+            let item = $(this).closest('.item').find('span').text();
+            let index = itemList.indexOf(item);
+            itemList.splice(index, 1);
+            updateList();
+            showMessage('Item Deleted');
+        });
+
+        // Reset the list
+        $('#reset-button').click(function() {
+            itemList = [];
+            updateList();
+            showMessage('List Reset');
+        });
+
+        // Update the list display
+        function updateList() {
+            let itemListElement = $('#item-list');
+            itemListElement.empty();
+            $.each(itemList, function(index, item) {
+                let li = $('<li class="item"></li>').text(item);
+                itemListElement.append(li);
+            });
+        }
+
+        // Display the searched items
+        function displaySearchedItems(items) {
+            let itemListElement = $('#item-list');
+            itemListElement.empty();
+            $.each(items, function(index, item) {
+                let li = $('<li class="item"></li>').text(item);
+                let deleteBtn = $('<button class="delete-btn">Delete</button>');
+                li.append(deleteBtn);
+                itemListElement.append(li);
+            });
+            let allItems = itemList.filter(function(element) {
+                return !items.includes(element);
+            });
+            $.each(allItems, function(index, item) {
+                let li = $('<li class="item"></li>').text(item);
+                itemListElement.append(li);
+            });
+        }
+
+        // Display a message
+        function showMessage(message) {
+            let messageElement = $('#message');
+            messageElement.text(message);
+        }
+    });
+</script>
+
+</body>
+</html>
